@@ -1,0 +1,9 @@
+version: 1
+models:
+  astra: { provider: openai, id: gpt-6-astra }
+  luna: { provider: openai, id: gpt-5.6-luna }
+  glm: { provider: zhipuai, id: glm-5.3 }
+bindings:
+  orchestrator: astra#high
+  implementer: luna#max
+  reviewer: glm

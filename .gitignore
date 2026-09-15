@@ -1,0 +1,15 @@
+# vendored reference repos
+.repos
+
+# dependencies
+node_modules
+
+# build output
+dist
+
+# lior runtime artifacts (in case of local dogfooding)
+.lior-backup
+*.bak
+
+# os / editor
+.DS_Store
