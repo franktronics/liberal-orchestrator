@@ -21,6 +21,7 @@ Load the relevant doc file based on the task at hand:
 - [app-design](.agents/doc/DESIGN.md): Product, concepts, settled decisions, roadmap
 - [architecture](.agents/doc/ARCHITECTURE.md): Pipeline, modules, config layering & scopes, write formats, tests
 - [plan](.agents/doc/PLAN.md): v0.1 plan — settled decisions, phases, acceptance criteria, definition of done
+- [README](README.md): Project overview, current scope, and local testing instructions
 
 * Always update documentation for significant changes or new features, and remove outdated information.
 * Use the format: `[link-name](link): shot description`

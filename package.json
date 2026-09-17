@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "description": "Explicitly configure which AI models play which roles in agent coding harnesses (Codex, OpenCode)",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/donvito/liberal-orchestrator.git"
+    "url": "git+https://github.com/franktronics/liberal-orchestrator.git"
+  },
+  "homepage": "https://github.com/franktronics/liberal-orchestrator#readme",
+  "bugs": {
+    "url": "https://github.com/franktronics/liberal-orchestrator/issues"
   },
   "keywords": ["codex", "opencode", "ai", "agents", "orchestration", "model-routing"],
   "engines": {

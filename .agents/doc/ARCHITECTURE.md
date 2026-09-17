@@ -140,5 +140,6 @@ value dropped (never a silent failure).
 - ESM, Node ≥ 20 compatible; development and tests with Bun.
 - npm: package `lior` (bin `lior`) ships a bundled Node-compatible
   `dist/cli.js`; CI builds it, runs it with Node, and inspects the npm package.
-  Apache-2.0 license + `NOTICE`
-  (role prompts derived from `codex-astra-luna-orchestrator`, Apache-2.0).
+- The project is MIT-licensed. Role prompts derived from
+  `codex-astra-luna-orchestrator` remain subject to its Apache-2.0 terms and
+  are distributed with the required attribution in `NOTICE`.
