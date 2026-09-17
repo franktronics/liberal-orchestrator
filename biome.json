@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["src/registry/snapshot.json", "bun.lock"]
+    "ignore": ["dist", "src/registry/snapshot.json", "bun.lock"]
   },
   "formatter": {
     "enabled": true,

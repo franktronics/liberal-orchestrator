@@ -50,9 +50,13 @@ All grilling decisions are settled; no open questions remain.
   models, bindings, providers, presets).
 - `core/loader.ts`: merge global (`~/.config/lior/lior.yaml`) < project.
 - `registry/`: models.dev fetch + 24 h cache (`~/.cache/lior/`), bundled
-  snapshot (7.6k models), overlay, `search`.
+  snapshot (7.6k models), validated-cache fallback, private-model overlay,
+  `search`.
 - `ModelRef` parser (`provider/model#effort`, aliases; splits on the first
   slash because model ids may contain slashes).
+- Upward project discovery keeps `lior.yaml` active from nested directories.
+- npm packaging exposes the built Node-compatible `lior` executable and is
+  smoke-tested in CI.
 
 **Acceptance**: `lior models search glm` offline (snapshot) and online;
 unit tests for parser/merge/search.

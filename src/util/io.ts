@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join, parse, resolve } from "node:path";
 
 /**
  * The only place (with adapter writers) allowed to touch the filesystem.
@@ -21,6 +21,23 @@ export function readJsonFile<T>(path: string): T | null {
     return null;
   }
   return JSON.parse(text) as T;
+}
+
+/** Finds the nearest named file from `startDir` upward to the filesystem root. */
+export function findFileUp(fileName: string, startDir = process.cwd()): string | null {
+  let current = resolve(startDir);
+  const root = parse(current).root;
+
+  while (true) {
+    const candidate = join(current, fileName);
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+    if (current === root) {
+      return null;
+    }
+    current = dirname(current);
+  }
 }
 
 /** Ensures the parent directory exists. */

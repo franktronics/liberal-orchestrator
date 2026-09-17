@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { readJsonFile, writeJsonFileAtomic } from "../util/io";
+import { readJsonFile, writeJsonFileAtomic, writeTextFileAtomic } from "../util/io";
 import { bundledSnapshot, getRegistry } from "./client";
 import type { FetchLike } from "./client";
 import type { RegistryCacheFile } from "./types";
@@ -37,6 +37,25 @@ const fetchFails: FetchLike = async () => {
 };
 
 describe("getRegistry", () => {
+  test("ignores malformed JSON cache and falls back instead of throwing", async () => {
+    const cachePath = join(dir, "malformed.json");
+    writeTextFileAtomic(cachePath, "{broken");
+
+    const result = await getRegistry({ cachePath, allowNetwork: false });
+    expect(result.source).toBe("snapshot");
+    expect(result.warning).toMatch(/ignoring invalid registry cache/);
+    expect(Object.keys(result.registry).length).toBeGreaterThan(0);
+  });
+
+  test("ignores cache with an unexpected shape", async () => {
+    const cachePath = join(dir, "wrong-shape.json");
+    writeJsonFileAtomic(cachePath, { fetchedAt: "2026-09-15T10:00:00Z", models: [] });
+
+    const result = await getRegistry({ cachePath, allowNetwork: false });
+    expect(result.source).toBe("snapshot");
+    expect(result.warning).toContain("unexpected shape");
+  });
+
   test("uses a fresh cache without touching the network", async () => {
     const cachePath = join(dir, "fresh.json");
     const now = Date.parse("2026-09-15T10:00:00Z");

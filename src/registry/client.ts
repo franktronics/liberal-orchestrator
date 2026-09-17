@@ -42,13 +42,16 @@ export function bundledSnapshot(): Registry {
 export async function getRegistry(opts: GetRegistryOptions = {}): Promise<GetRegistryResult> {
   const ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
   const now = opts.now ?? Date.now();
+  let cacheWarning: string | undefined;
 
   if (opts.cachePath) {
-    const cached = readJsonFile<RegistryCacheFile>(opts.cachePath);
+    const cacheResult = readCache(opts.cachePath);
+    const cached = cacheResult.cache;
+    cacheWarning = cacheResult.warning;
     if (cached?.models && cached.fetchedAt) {
       const fetchedAt = Date.parse(cached.fetchedAt);
       if (!Number.isNaN(fetchedAt) && now - fetchedAt < ttlMs) {
-        return { registry: cached.models, source: "cache", fetchedAt };
+        return { registry: cached.models, source: "cache", fetchedAt, warning: cacheWarning };
       }
     }
   }
@@ -73,16 +76,52 @@ export async function getRegistry(opts: GetRegistryOptions = {}): Promise<GetReg
         };
         writeJsonFileAtomic(opts.cachePath, cacheFile);
       }
-      return { registry, source: "network", fetchedAt: now };
+      return { registry, source: "network", fetchedAt: now, warning: cacheWarning };
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
+      const networkWarning = `could not refresh registry (${reason}) — using bundled snapshot`;
       return {
         registry: bundledSnapshot(),
         source: "snapshot",
-        warning: `could not refresh registry (${reason}) — using bundled snapshot`,
+        warning: cacheWarning ? `${cacheWarning}; ${networkWarning}` : networkWarning,
       };
     }
   }
 
-  return { registry: bundledSnapshot(), source: "snapshot" };
+  return { registry: bundledSnapshot(), source: "snapshot", warning: cacheWarning };
+}
+
+function readCache(path: string): { cache: RegistryCacheFile | null; warning?: string } {
+  let value: unknown;
+  try {
+    value = readJsonFile<unknown>(path);
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    return { cache: null, warning: `ignoring invalid registry cache (${reason})` };
+  }
+
+  if (value === null) {
+    return { cache: null };
+  }
+  if (!isRegistryCacheFile(value)) {
+    return { cache: null, warning: "ignoring invalid registry cache (unexpected shape)" };
+  }
+  return { cache: value };
+}
+
+function isRegistryCacheFile(value: unknown): value is RegistryCacheFile {
+  if (!isRecord(value) || typeof value.fetchedAt !== "string" || !isRecord(value.models)) {
+    return false;
+  }
+  return Object.values(value.models).every(
+    (model) =>
+      isRecord(model) &&
+      typeof model.provider === "string" &&
+      typeof model.id === "string" &&
+      typeof model.name === "string",
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }

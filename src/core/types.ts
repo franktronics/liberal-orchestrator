@@ -14,6 +14,14 @@ export type WireApi = "responses" | "chat" | "anthropic";
 export interface ModelSpec {
   provider: string;
   id: string;
+  /** Optional display metadata for private models or overrides. */
+  name?: string;
+  context?: number;
+  output?: number;
+  reasoning?: boolean;
+  tool_call?: boolean;
+  released?: string;
+  cost?: { input?: number; output?: number };
 }
 
 /** Endpoint metadata under `providers:` in lior.yaml (never secrets). */

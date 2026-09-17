@@ -4,8 +4,10 @@ import pc from "picocolors";
 import { loadConfig } from "../../core/loader";
 import { parseModelRef } from "../../core/modelref";
 import { getRegistry } from "../../registry/client";
+import { applyRegistryOverlay } from "../../registry/overlay";
 import { aliasMap, searchModels } from "../../registry/search";
 import type { RegistryModel } from "../../registry/types";
+import { findFileUp } from "../../util/io";
 import { resolvePaths } from "../../util/paths";
 
 export const modelsCommand = defineCommand({
@@ -42,8 +44,9 @@ export const modelsCommand = defineCommand({
 
 async function loadContext(offline: boolean) {
   const paths = resolvePaths();
+  const projectPath = findFileUp("lior.yaml") ?? undefined;
   const { config } = await loadConfig({
-    projectPath: "lior.yaml",
+    projectPath,
     globalPath: paths.globalConfigPath,
   });
   const result = await getRegistry({
@@ -53,7 +56,10 @@ async function loadContext(offline: boolean) {
   if (result.warning) {
     console.error(pc.yellow(result.warning));
   }
-  return { config, result };
+  return {
+    config,
+    result: { ...result, registry: applyRegistryOverlay(result.registry, config) },
+  };
 }
 
 async function showSearch(term: string, offline: boolean): Promise<void> {

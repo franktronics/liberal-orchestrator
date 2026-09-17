@@ -6,7 +6,14 @@ const FULL = `
 version: 1
 harness: [opencode, codex]
 models:
-  astra: { provider: openai, id: gpt-6-astra }
+  astra:
+    provider: openai
+    id: gpt-6-astra
+    name: GPT-6 Astra Custom
+    context: 1050000
+    tool_call: true
+    released: 2026-09-04
+    cost: { input: 1.5, output: 9 }
 bindings:
   orchestrator: astra#high
   reviewer:
@@ -31,7 +38,15 @@ describe("parseConfig", () => {
   test("parses the full example", () => {
     const config = parseConfig(FULL);
     expect(config.harness).toEqual(["opencode", "codex"]);
-    expect(config.models?.astra).toEqual({ provider: "openai", id: "gpt-6-astra" });
+    expect(config.models?.astra).toEqual({
+      provider: "openai",
+      id: "gpt-6-astra",
+      name: "GPT-6 Astra Custom",
+      context: 1050000,
+      tool_call: true,
+      released: "2026-09-04",
+      cost: { input: 1.5, output: 9 },
+    });
     expect(config.bindings?.reviewer).toEqual({
       model: "glm",
       codex: "openai/astra",

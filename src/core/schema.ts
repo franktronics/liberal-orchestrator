@@ -9,6 +9,18 @@ export const harnessSchema = z.enum(["opencode", "codex"]);
 const modelSpecSchema = z.object({
   provider: z.string().min(1),
   id: z.string().min(1),
+  name: z.string().min(1).optional(),
+  context: z.number().int().positive().optional(),
+  output: z.number().int().positive().optional(),
+  reasoning: z.boolean().optional(),
+  tool_call: z.boolean().optional(),
+  released: z.string().date().optional(),
+  cost: z
+    .object({
+      input: z.number().nonnegative().optional(),
+      output: z.number().nonnegative().optional(),
+    })
+    .optional(),
 });
 
 const providerSpecSchema = z.object({

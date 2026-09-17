@@ -100,9 +100,19 @@ or Codex TOML (`name`, `description`, `developer_instructions`, `model`,
 - `https://models.dev/api.json` → cache `~/.cache/lior/registry.json` (24 h TTL).
 - Trimmed snapshot bundled in the package (offline-first), refreshed by
   `scripts/update-registry.ts`.
-- Overlay: `models:` and `providers:` sections of `lior.yaml` — aliases,
-  `base_url`, env var, per-provider `wire_api` flag (Codex Responses-only
-  compatibility).
+- Overlay: `models:` adds or overrides registry entries (including private
+  models, display name, token limits, capabilities, release date, and cost).
+  `providers:` carries `base_url`, env var, and per-provider `wire_api` flag
+  (Codex Responses-only compatibility).
+- Invalid or incompatible cache files are ignored with a warning before
+  falling back to the network or bundled snapshot.
+
+## Project discovery
+
+Commands search for the nearest `lior.yaml` from the current directory up to
+the filesystem root. This keeps project aliases and bindings active when lior
+is invoked from nested package or source directories. The global config remains
+the lower-precedence layer.
 
 ## Effort mapping
 
@@ -128,5 +138,7 @@ value dropped (never a silent failure).
 ## Compatibility & distribution
 
 - ESM, Node ≥ 20 compatible; development and tests with Bun.
-- npm: package `lior` (bin `lior`). Apache-2.0 license + `NOTICE`
+- npm: package `lior` (bin `lior`) ships a bundled Node-compatible
+  `dist/cli.js`; CI builds it, runs it with Node, and inspects the npm package.
+  Apache-2.0 license + `NOTICE`
   (role prompts derived from `codex-astra-luna-orchestrator`, Apache-2.0).

@@ -157,6 +157,12 @@ models:                        # registry overlay (short aliases)
   astra: { provider: openai,   id: gpt-6-astra }
   luna:  { provider: openai,   id: gpt-5.6-luna }
   glm:   { provider: zhipuai,  id: glm-5.3 }
+  private-coder:               # custom/private models may add metadata
+    provider: acme
+    id: private-coder-v1
+    context: 128000
+    reasoning: true
+    tool_call: true
 
 bindings:
   orchestrator: astra#high
